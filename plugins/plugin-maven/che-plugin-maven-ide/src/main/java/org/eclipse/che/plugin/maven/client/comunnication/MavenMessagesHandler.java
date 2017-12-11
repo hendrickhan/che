@@ -22,6 +22,7 @@ import org.eclipse.che.ide.api.workspace.event.WorkspaceStoppedEvent;
 import org.eclipse.che.ide.console.CommandConsoleFactory;
 import org.eclipse.che.ide.console.DefaultOutputConsole;
 import org.eclipse.che.ide.processes.panel.ProcessesPanelPresenter;
+import org.eclipse.che.ide.util.loging.Log;
 import org.eclipse.che.plugin.maven.client.MavenJsonRpcHandler;
 import org.eclipse.che.plugin.maven.client.comunnication.progressor.background.BackgroundLoaderPresenter;
 import org.eclipse.che.plugin.maven.shared.dto.ArchetypeOutput;
@@ -116,6 +117,9 @@ public class MavenMessagesHandler {
     List<String> updatedProjects = dto.getUpdatedProjects();
     Set<String> projectToRefresh = computeUniqueHiLevelProjects(updatedProjects);
 
+    Log.info(getClass(), "updatedProjects: " + updatedProjects);
+    Log.info(getClass(), "projectsToRefresh: " + projectToRefresh);
+
     for (final String path : projectToRefresh) {
       appContext
           .getWorkspaceRoot()
@@ -123,6 +127,7 @@ public class MavenMessagesHandler {
           .then(
               container -> {
                 if (container.isPresent()) {
+                  Log.info(getClass(), "call synchronize on: " + container.get().getLocation());
                   container.get().synchronize();
                 }
               });

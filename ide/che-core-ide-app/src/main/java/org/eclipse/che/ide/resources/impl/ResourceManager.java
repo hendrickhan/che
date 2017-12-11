@@ -1052,6 +1052,9 @@ public final class ResourceManager {
           maxDepth[0] = segCount;
         }
       }
+
+      java.util.Arrays.stream(resources)
+          .forEach(resource -> store.dispose(resource.getLocation(), true));
     }
 
     if (container.getLocation().isRoot()) {

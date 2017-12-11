@@ -68,7 +68,6 @@ import org.eclipse.che.ide.ui.smartTree.data.Node;
 import org.eclipse.che.ide.ui.smartTree.data.TreeExpander;
 import org.eclipse.che.ide.ui.smartTree.data.settings.NodeSettings;
 import org.eclipse.che.ide.ui.smartTree.data.settings.SettingsProvider;
-import org.eclipse.che.ide.ui.smartTree.presentation.HasPresentation;
 import org.eclipse.che.providers.DynaObject;
 import org.vectomatic.dom.svg.ui.SVGResource;
 
@@ -340,13 +339,24 @@ public class ProjectExplorerPresenter extends BasePresenter
       final Node node = getNode(delta.getResource().getLocation());
       if (node != null) {
 
-        if (node instanceof ResourceNode && !delta.getResource().isProject()) {
-          ((ResourceNode) node).setData(delta.getResource());
-        }
+        //        if (node instanceof ResourceNode
+        //            && ((ResourceNode) node)
+        //            .getData()
+        //            .getLocation()
+        //            .equals(delta.getResource().getLocation())) {
+        //          final String oldId = tree.getNodeStorage().getKeyProvider().getKey(node);
+        //          ((ResourceNode) node).setData(delta.getResource());
+        //          tree.getNodeStorage().reIndexNode(oldId, node);
+        ////          tree.refresh(node);
+        //        }
 
-        if (node instanceof HasPresentation) {
-          tree.refresh(node);
-        }
+        //        if (node instanceof ResourceNode && !delta.getResource().isProject()) {
+        //          ((ResourceNode) node).setData(delta.getResource());
+        //        }
+
+        //        if (node instanceof HasPresentation) {
+        tree.refresh(node);
+        //        }
       }
 
       updateTask.submit(resource.getLocation());
