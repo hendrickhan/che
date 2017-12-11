@@ -55,7 +55,9 @@ import org.eclipse.che.api.workspace.server.spi.provision.env.JavaOptsEnvVariabl
 import org.eclipse.che.api.workspace.server.spi.provision.env.MachineTokenEnvVarProvider;
 import org.eclipse.che.api.workspace.server.spi.provision.env.MavenOptsEnvVariableProvider;
 import org.eclipse.che.api.workspace.server.spi.provision.env.ProjectsRootEnvVariableProvider;
+import org.eclipse.che.api.workspace.server.spi.provision.env.WorkspaceAgentJavaOptsEnvVariableProvider;
 import org.eclipse.che.api.workspace.server.spi.provision.env.WorkspaceIdEnvVarProvider;
+import org.eclipse.che.api.workspace.server.spi.provision.env.WorkspaceMavenServerJavaOptsEnvVariableProvider;
 import org.eclipse.che.api.workspace.server.stack.StackLoader;
 import org.eclipse.che.api.workspace.server.token.MachineTokenProvider;
 import org.eclipse.che.commons.auth.token.ChainedTokenExtractor;
@@ -148,6 +150,9 @@ public class WsMasterModule extends AbstractModule {
     envVarProviders.addBinding().to(JavaOptsEnvVariableProvider.class);
     envVarProviders.addBinding().to(MavenOptsEnvVariableProvider.class);
     envVarProviders.addBinding().to(ProjectsRootEnvVariableProvider.class);
+    envVarProviders.addBinding().to(AgentAuthEnableEnvVarProvider.class);
+    envVarProviders.addBinding().to(WorkspaceAgentJavaOptsEnvVariableProvider.class);
+    envVarProviders.addBinding().to(WorkspaceMavenServerJavaOptsEnvVariableProvider.class);
     envVarProviders.addBinding().to(AgentAuthEnableEnvVarProvider.class);
 
     bind(org.eclipse.che.api.workspace.server.bootstrap.InstallerService.class);
