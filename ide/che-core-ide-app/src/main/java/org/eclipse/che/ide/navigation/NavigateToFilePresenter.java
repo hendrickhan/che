@@ -14,7 +14,6 @@ import static java.util.Collections.emptyList;
 import static org.eclipse.che.ide.api.jsonrpc.Constants.WS_AGENT_JSON_RPC_ENDPOINT_ID;
 
 import com.google.common.base.Optional;
-import com.google.gwt.http.client.URL;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import org.eclipse.che.api.core.jsonrpc.commons.RequestTransmitter;
@@ -95,7 +94,7 @@ public class NavigateToFilePresenter implements NavigateToFileView.ActionDelegat
         dtoFactory
             .createDto(ProjectSearchRequestDto.class)
             .withPath("")
-            .withName(URL.encodePathSegment(fileName + "*"));
+            .withName("(.+?)((\\.java))$");
 
     requestTransmitter
         .newRequest()

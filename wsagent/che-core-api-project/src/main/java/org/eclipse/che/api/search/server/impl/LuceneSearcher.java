@@ -28,7 +28,11 @@ import java.nio.charset.MalformedInputException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -51,12 +55,10 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.classic.ParseException;
-import org.apache.lucene.queryparser.classic.QueryParser;
-import org.apache.lucene.search.BooleanClause;
-import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.PrefixQuery;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.search.RegexpQuery;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.SearcherFactory;
 import org.apache.lucene.search.SearcherManager;
@@ -107,7 +109,7 @@ public class LuceneSearcher implements Searcher {
   private boolean closed = true;
 
   @Inject
-  protected LuceneSearcher(
+  public LuceneSearcher(
       @Named("vfs.index_filter_matcher") Set<PathMatcher> excludePatterns,
       @Named("vfs.local.fs_index_root_dir") File indexDirectory,
       @Named("che.user.workspaces.storage") File root,
@@ -127,7 +129,7 @@ public class LuceneSearcher implements Searcher {
   }
 
   @PostConstruct
-  private void initialize() throws ServerException {
+  public void initialize() throws ServerException {
     doInitialize();
     if (!executor.isShutdown()) {
       executor.execute(
@@ -142,7 +144,7 @@ public class LuceneSearcher implements Searcher {
   }
 
   @PreDestroy
-  private void terminate() {
+  public void terminate() {
     doTerminate();
     executor.shutdown();
     try {
@@ -317,24 +319,27 @@ public class LuceneSearcher implements Searcher {
   }
 
   private Query createLuceneQuery(QueryExpression query) throws ParseException, IOException {
-    BooleanQuery.Builder luceneQueryBuilder = new BooleanQuery.Builder();
-    final String name = query.getName();
-    final String path = query.getPath();
-    final String text = query.getText();
-    if (path != null) {
-      luceneQueryBuilder.add(new PrefixQuery(new Term(PATH_FIELD, path)), BooleanClause.Occur.MUST);
-    }
-    if (name != null) {
-      QueryParser qParser = new QueryParser(NAME_FIELD, makeAnalyzer());
-      qParser.setAllowLeadingWildcard(true);
-      luceneQueryBuilder.add(qParser.parse(name), BooleanClause.Occur.MUST);
-    }
-    if (text != null) {
-      QueryParser qParser = new QueryParser(TEXT_FIELD, makeAnalyzer());
-      qParser.setAllowLeadingWildcard(true);
-      luceneQueryBuilder.add(qParser.parse(text), BooleanClause.Occur.MUST);
-    }
-    return luceneQueryBuilder.build();
+    RegexpQuery luceneQuery = new RegexpQuery(new Term(NAME_FIELD, query.getName()));
+    //    BooleanQuery.Builder luceneQueryBuilder = new BooleanQuery.Builder();
+    //    final String name = query.getName();
+    //    final String path = query.getPath();
+    //    final String text = query.getText();
+    //    if (path != null) {
+    //      luceneQueryBuilder.add(new PrefixQuery(new Term(PATH_FIELD, path)),
+    // BooleanClause.Occur.MUST);
+    //    }
+    //    if (name != null) {
+    //      QueryParser qParser = new QueryParser(NAME_FIELD, makeAnalyzer());
+    //      qParser.setAllowLeadingWildcard(true);
+    //      luceneQueryBuilder.add(qParser.parse(name), BooleanClause.Occur.MUST);
+    //    }
+    //    if (text != null) {
+    //      QueryParser qParser = new QueryParser(TEXT_FIELD, makeAnalyzer());
+    //      qParser.setAllowLeadingWildcard(true);
+    //      luceneQueryBuilder.add(qParser.parse(text), BooleanClause.Occur.MUST);
+    //    }
+    //    return luceneQueryBuilder.build();
+    return luceneQuery;
   }
 
   private ScoreDoc skipScoreDocs(IndexSearcher luceneSearcher, Query luceneQuery, int numSkipDocs)
