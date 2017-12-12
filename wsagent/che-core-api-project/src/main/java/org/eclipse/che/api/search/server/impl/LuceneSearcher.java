@@ -55,10 +55,12 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.queryparser.classic.QueryParser;
+import org.apache.lucene.search.BooleanClause;
+import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.PrefixQuery;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.RegexpQuery;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.SearcherFactory;
 import org.apache.lucene.search.SearcherManager;
@@ -319,27 +321,24 @@ public class LuceneSearcher implements Searcher {
   }
 
   private Query createLuceneQuery(QueryExpression query) throws ParseException, IOException {
-    RegexpQuery luceneQuery = new RegexpQuery(new Term(NAME_FIELD, query.getName()));
-    //    BooleanQuery.Builder luceneQueryBuilder = new BooleanQuery.Builder();
-    //    final String name = query.getName();
-    //    final String path = query.getPath();
-    //    final String text = query.getText();
-    //    if (path != null) {
-    //      luceneQueryBuilder.add(new PrefixQuery(new Term(PATH_FIELD, path)),
-    // BooleanClause.Occur.MUST);
-    //    }
-    //    if (name != null) {
-    //      QueryParser qParser = new QueryParser(NAME_FIELD, makeAnalyzer());
-    //      qParser.setAllowLeadingWildcard(true);
-    //      luceneQueryBuilder.add(qParser.parse(name), BooleanClause.Occur.MUST);
-    //    }
-    //    if (text != null) {
-    //      QueryParser qParser = new QueryParser(TEXT_FIELD, makeAnalyzer());
-    //      qParser.setAllowLeadingWildcard(true);
-    //      luceneQueryBuilder.add(qParser.parse(text), BooleanClause.Occur.MUST);
-    //    }
-    //    return luceneQueryBuilder.build();
-    return luceneQuery;
+    BooleanQuery.Builder luceneQueryBuilder = new BooleanQuery.Builder();
+    final String name = query.getName();
+    final String path = query.getPath();
+    final String text = query.getText();
+    if (path != null) {
+      luceneQueryBuilder.add(new PrefixQuery(new Term(PATH_FIELD, path)), BooleanClause.Occur.MUST);
+    }
+    if (name != null) {
+      QueryParser qParser = new QueryParser(NAME_FIELD, makeAnalyzer());
+      qParser.setAllowLeadingWildcard(true);
+      luceneQueryBuilder.add(qParser.parse(name), BooleanClause.Occur.MUST);
+    }
+    if (text != null) {
+      QueryParser qParser = new QueryParser(TEXT_FIELD, makeAnalyzer());
+      qParser.setAllowLeadingWildcard(true);
+      luceneQueryBuilder.add(qParser.parse(text), BooleanClause.Occur.MUST);
+    }
+    return luceneQueryBuilder.build();
   }
 
   private ScoreDoc skipScoreDocs(IndexSearcher luceneSearcher, Query luceneQuery, int numSkipDocs)

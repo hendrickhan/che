@@ -62,6 +62,7 @@ public class LuceneSearcherTest {
     tempDirectory = Files.createTempDirectory("testsSearch");
     Path tmp1 = Files.createFile(Paths.get(tempDirectory.toString(), "xxx.txt"));
     Path tmp2 = Files.createFile(Paths.get(tempDirectory.toString(), "zzz.txt"));
+    Path tmp3 = Files.createFile(Paths.get(tempDirectory.toString(), "wer.vbd"));
 
     Files.write(tmp1, TEST_CONTENT[1].getBytes());
     Files.write(tmp2, TEST_CONTENT[2].getBytes());
@@ -73,18 +74,19 @@ public class LuceneSearcherTest {
             new PathTransformer() {
               @Override
               public Path transform(String wsPath) {
-                return null;
+                return Paths.get(wsPath);
               }
 
               @Override
               public String transform(Path fsPath) {
-                return null;
+                return  fsPath.toString();
               }
             });
     searcher.initialize();
-    QueryExpression query = new QueryExpression().setName("(.+?)((\\.txt))$");
+    QueryExpression query = new QueryExpression().setName("*.vbd");
     query.setPath(tempDirectory.toAbsolutePath().toString());
     List<String> paths = searcher.search(query).getFilePaths();
-    assertEquals(paths, 2);
+    assertEquals(paths.size(),1);
+    assertEquals(paths.get(0), tmp3.toString());
   }
 }
