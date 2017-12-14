@@ -10,6 +10,8 @@
  */
 package org.eclipse.che.plugin.maven.server;
 
+import static com.google.common.base.MoreObjects.firstNonNull;
+
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
@@ -216,8 +218,14 @@ public class MavenServerManager extends RmiObjectWrapper<MavenRemoteServer> {
 
     parameters.getClassPath().addAll(classPath);
 
-    parameters.getVmParameters().add("-Xmx512m");
+    String vmArguments =
+        firstNonNull(
+            System.getenv("CHE_WORKSPACE_MAVEN_SERVER_JAVA_OPTIONS"),
+            firstNonNull(
+                System.getenv("CHE_WORKSPACE_MAVEN_SERVER_JAVA_OPTIONS_DEFAULT"), "-Xmx128m"));
 
+    parameters.getEnviroment().put("JAVA_OPTS", vmArguments);
+    LOG.info("Jvm parameters for maven server is {} ", vmArguments);
     return parameters;
   }
 
