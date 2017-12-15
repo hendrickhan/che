@@ -82,6 +82,10 @@
         </dependency>
         <dependency>
             <groupId>org.eclipse.che</groupId>
+            <artifactId>j-profiler-installer</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.che</groupId>
             <artifactId>ls-csharp-agent</artifactId>
         </dependency>
         <dependency>
