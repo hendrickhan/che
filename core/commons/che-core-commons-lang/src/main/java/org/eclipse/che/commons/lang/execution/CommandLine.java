@@ -17,6 +17,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Manages command line options and create native OS process. Also manages creating {@link Process}
@@ -26,6 +28,7 @@ import java.util.Map;
  * @author Evgen Vidolob
  */
 public class CommandLine {
+  private static final Logger LOG = LoggerFactory.getLogger(CommandLine.class);
   private String executablePath;
   private boolean redirectErrorStream;
   private File workingDirectory;
@@ -96,6 +99,7 @@ public class CommandLine {
   }
 
   private Process runProcess(List<String> commandLine) throws IOException {
+    LOG.info("Start process {} environment {} ", commandLine, environment);
     ProcessBuilder processBuilder = new ProcessBuilder(commandLine);
     Map<String, String> environment = processBuilder.environment();
     environment.clear();
