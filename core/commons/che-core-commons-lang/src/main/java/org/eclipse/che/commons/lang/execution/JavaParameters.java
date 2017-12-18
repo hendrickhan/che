@@ -86,13 +86,13 @@ public class JavaParameters {
     CommandLine result = new CommandLine(javaExecutable);
     result.getEnvironment().putAll(enviroment);
     result.addParameters(vmParameters);
-    result.addParameter(" -classpath");
+    result.addParameter("-classpath");
     result.addParameter(createClasspath(classPath));
 
     if (mainClassName != null) {
       result.addParameter(mainClassName);
     } else if (jarPath != null) {
-      result.addParameter(" -jar");
+      result.addParameter("-jar");
       result.addParameter(jarPath);
     }
 
