@@ -227,6 +227,7 @@ public class MavenServerManager extends RmiObjectWrapper<MavenRemoteServer> {
 
     Arrays.stream(vmArguments.split(" "))
         .map(String::trim)
+        .filter(v -> !v.isEmpty())
         .forEach(parameters.getVmParameters()::add);
 
     LOG.info("Jvm parameters for maven server is {} ", vmArguments);
