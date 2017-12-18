@@ -10,6 +10,7 @@
  */
 package org.eclipse.che.plugin.maven.server;
 
+import com.google.common.base.MoreObjects;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
@@ -19,6 +20,7 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import javax.annotation.PreDestroy;
@@ -216,20 +218,19 @@ public class MavenServerManager extends RmiObjectWrapper<MavenRemoteServer> {
 
     parameters.getClassPath().addAll(classPath);
 
-    //    String vmArguments =
-    //        firstNonNull(
-    //            System.getenv("CHE_WORKSPACE_MAVEN_SERVER_JAVA_OPTIONS"),
-    //            firstNonNull(
-    //                System.getenv("CHE_WORKSPACE_MAVEN_SERVER_JAVA_OPTIONS_DEFAULT"),
-    // "-Xmx128m"));
-    //
-    //    Arrays.stream(vmArguments.split(" "))
-    //        .map(String::trim)
-    //        .filter(v -> !v.isEmpty())
-    //        .forEach(parameters.getVmParameters()::add);
-    //
-    //    LOG.info("Jvm parameters for maven server is {} ", vmArguments);
-    parameters.getVmParameters().add("-Xmx512m");
+    String vmArguments =
+        MoreObjects.firstNonNull(
+            System.getenv("CHE_WORKSPACE_MAVEN_SERVER_JAVA_OPTIONS"),
+            MoreObjects.firstNonNull(
+                System.getenv("CHE_WORKSPACE_MAVEN_SERVER_JAVA_OPTIONS_DEFAULT"), "-Xmx128m"));
+
+    Arrays.stream(vmArguments.split(" "))
+        .map(String::trim)
+        .filter(v -> !v.isEmpty())
+        .forEach(parameters.getVmParameters()::add);
+    LOG.info("Jvm parameters for maven server is {} ", vmArguments);
+
+
     return parameters;
   }
 
