@@ -216,18 +216,19 @@ public class MavenServerManager extends RmiObjectWrapper<MavenRemoteServer> {
 
     parameters.getClassPath().addAll(classPath);
 
-//    String vmArguments =
-//        firstNonNull(
-//            System.getenv("CHE_WORKSPACE_MAVEN_SERVER_JAVA_OPTIONS"),
-//            firstNonNull(
-//                System.getenv("CHE_WORKSPACE_MAVEN_SERVER_JAVA_OPTIONS_DEFAULT"), "-Xmx128m"));
-//
-//    Arrays.stream(vmArguments.split(" "))
-//        .map(String::trim)
-//        .filter(v -> !v.isEmpty())
-//        .forEach(parameters.getVmParameters()::add);
-//
-//    LOG.info("Jvm parameters for maven server is {} ", vmArguments);
+    //    String vmArguments =
+    //        firstNonNull(
+    //            System.getenv("CHE_WORKSPACE_MAVEN_SERVER_JAVA_OPTIONS"),
+    //            firstNonNull(
+    //                System.getenv("CHE_WORKSPACE_MAVEN_SERVER_JAVA_OPTIONS_DEFAULT"),
+    // "-Xmx128m"));
+    //
+    //    Arrays.stream(vmArguments.split(" "))
+    //        .map(String::trim)
+    //        .filter(v -> !v.isEmpty())
+    //        .forEach(parameters.getVmParameters()::add);
+    //
+    //    LOG.info("Jvm parameters for maven server is {} ", vmArguments);
     parameters.getVmParameters().add("-Xmx512m");
     return parameters;
   }
