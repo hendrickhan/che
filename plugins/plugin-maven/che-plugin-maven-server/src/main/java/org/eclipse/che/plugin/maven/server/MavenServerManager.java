@@ -21,6 +21,7 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import javax.annotation.PreDestroy;
@@ -224,7 +225,10 @@ public class MavenServerManager extends RmiObjectWrapper<MavenRemoteServer> {
             firstNonNull(
                 System.getenv("CHE_WORKSPACE_MAVEN_SERVER_JAVA_OPTIONS_DEFAULT"), "-Xmx128m"));
 
-    parameters.getVmParameters().add(vmArguments);
+    Arrays.stream(vmArguments.split(" "))
+        .map(String::trim)
+        .forEach(parameters.getVmParameters()::add);
+
     LOG.info("Jvm parameters for maven server is {} ", vmArguments);
     return parameters;
   }
