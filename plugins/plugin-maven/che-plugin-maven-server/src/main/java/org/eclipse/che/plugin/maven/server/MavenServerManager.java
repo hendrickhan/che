@@ -224,7 +224,7 @@ public class MavenServerManager extends RmiObjectWrapper<MavenRemoteServer> {
             firstNonNull(
                 System.getenv("CHE_WORKSPACE_MAVEN_SERVER_JAVA_OPTIONS_DEFAULT"), "-Xmx128m"));
 
-    parameters.getEnviroment().put("JAVA_OPTS", vmArguments);
+    parameters.getVmParameters().add(vmArguments);
     LOG.info("Jvm parameters for maven server is {} ", vmArguments);
     return parameters;
   }
