@@ -56,15 +56,7 @@ import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
-import org.apache.lucene.search.BooleanClause;
-import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.PrefixQuery;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.ScoreDoc;
-import org.apache.lucene.search.SearcherFactory;
-import org.apache.lucene.search.SearcherManager;
-import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.search.*;
 import org.apache.lucene.search.highlight.QueryScorer;
 import org.apache.lucene.search.highlight.TokenSources;
 import org.apache.lucene.store.Directory;
@@ -207,7 +199,7 @@ public class LuceneSearcher implements Searcher {
       searcherManager.maybeRefresh();
       luceneSearcher = searcherManager.acquire();
 
-      Query luceneQuery = createLuceneQuery(query);
+      Query luceneQuery = createRegexpLuceneQuery(query);
 
       ScoreDoc after = null;
       final int numSkipDocs = Math.max(0, query.getSkipCount());
@@ -318,6 +310,11 @@ public class LuceneSearcher implements Searcher {
         LOG.error(e.getMessage());
       }
     }
+  }
+
+  private Query createRegexpLuceneQuery(QueryExpression query) throws ParseException, IOException {
+    RegexpQuery regexpQuery = new RegexpQuery(new Term(NAME_FIELD, query.getName()));
+    return regexpQuery;
   }
 
   private Query createLuceneQuery(QueryExpression query) throws ParseException, IOException {

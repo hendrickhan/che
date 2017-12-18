@@ -19,9 +19,14 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.eclipse.che.api.fs.server.PathTransformer;
+import org.eclipse.che.api.search.server.SearchResult;
 import org.eclipse.che.api.search.server.impl.LuceneSearcher;
 import org.eclipse.che.api.search.server.impl.QueryExpression;
+import org.eclipse.che.api.search.server.impl.SearchResultEntry;
 import org.eclipse.che.commons.lang.IoUtil;
 import org.eclipse.che.commons.lang.NameGenerator;
 import org.testng.annotations.AfterMethod;
@@ -40,6 +45,31 @@ public class LuceneSearcherTest {
   private File indexDirectory;
   private LuceneSearcher searcher;
   private Path tempDirectory;
+
+  private static Pattern fileExtnPtrn = Pattern.compile("([^\\s]+(\\.(?i)(txt|doc|csv|pdf))$)");
+
+  public static boolean validateFileExtn(String userName){
+
+    Matcher mtch = fileExtnPtrn.matcher(userName);
+    if(mtch.matches()){
+      return true;
+    }
+    return false;
+  }
+
+  @Test
+  public void test(){
+    System.out.println("Is 'java2novice.pdf' allowed file? "
+            +validateFileExtn("java2novice.pdf"));
+    System.out.println("Is 'cric.doc' allowed file? "
+            +validateFileExtn("cric.doc"));
+    System.out.println("Is 'java.gif' allowed file? "
+            +validateFileExtn("java.gif"));
+    System.out.println("Is 'novice.mp3' allowed file? "
+            +validateFileExtn("novice.mp3"));
+    System.out.println("Is 'java_2.jpeg' allowed file? "
+            +validateFileExtn("java_2.jpeg"));
+  }
 
   @BeforeMethod
   public void setUp() throws Exception {
@@ -66,6 +96,7 @@ public class LuceneSearcherTest {
 
     Files.write(tmp1, TEST_CONTENT[1].getBytes());
     Files.write(tmp2, TEST_CONTENT[2].getBytes());
+    Files.write(tmp3, TEST_CONTENT[3].getBytes());
     searcher =
         new LuceneSearcher(
             Collections.emptySet(),
@@ -79,14 +110,16 @@ public class LuceneSearcherTest {
 
               @Override
               public String transform(Path fsPath) {
-                return  fsPath.toString();
+                return fsPath.toString();
               }
             });
     searcher.initialize();
-    QueryExpression query = new QueryExpression().setName("*.vbd");
-    query.setPath(tempDirectory.toAbsolutePath().toString());
-    List<String> paths = searcher.search(query).getFilePaths();
-    assertEquals(paths.size(),1);
-    assertEquals(paths.get(0), tmp3.toString());
+    Thread.sleep(1000);
+    QueryExpression query = new QueryExpression().setName(".*.(txt|vbd)");
+    SearchResult search = searcher.search(query);
+    List<SearchResultEntry> results = search.getResults();
+    assertEquals(results.size(), 3);
   }
+
+
 }
