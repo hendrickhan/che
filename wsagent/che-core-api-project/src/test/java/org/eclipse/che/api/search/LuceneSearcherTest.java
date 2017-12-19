@@ -19,6 +19,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -57,20 +58,6 @@ public class LuceneSearcherTest {
     return false;
   }
 
-  @Test
-  public void test(){
-    System.out.println("Is 'java2novice.pdf' allowed file? "
-            +validateFileExtn("java2novice.pdf"));
-    System.out.println("Is 'cric.doc' allowed file? "
-            +validateFileExtn("cric.doc"));
-    System.out.println("Is 'java.gif' allowed file? "
-            +validateFileExtn("java.gif"));
-    System.out.println("Is 'novice.mp3' allowed file? "
-            +validateFileExtn("novice.mp3"));
-    System.out.println("Is 'java_2.jpeg' allowed file? "
-            +validateFileExtn("java_2.jpeg"));
-  }
-
   @BeforeMethod
   public void setUp() throws Exception {
 
@@ -90,13 +77,11 @@ public class LuceneSearcherTest {
   @Test
   public void initializesIndexForExistedFiles() throws Exception {
     tempDirectory = Files.createTempDirectory("testsSearch");
-    Path tmp1 = Files.createFile(Paths.get(tempDirectory.toString(), "xxx.txt"));
-    Path tmp2 = Files.createFile(Paths.get(tempDirectory.toString(), "zzz.txt"));
-    Path tmp3 = Files.createFile(Paths.get(tempDirectory.toString(), "wer.vbd"));
-
-    Files.write(tmp1, TEST_CONTENT[1].getBytes());
-    Files.write(tmp2, TEST_CONTENT[2].getBytes());
-    Files.write(tmp3, TEST_CONTENT[3].getBytes());
+    Files.createFile(Paths.get(tempDirectory.toString(), "xxx.txt"));
+    Files.createFile(Paths.get(tempDirectory.toString(), "zzz.java"));
+    Files.createFile(Paths.get(tempDirectory.toString(), "aaa.yaml"));
+    Files.createFile(Paths.get(tempDirectory.toString(), "bbb.java"));
+    Files.createFile(Paths.get(tempDirectory.toString(), "zzz.txt"));
     searcher =
         new LuceneSearcher(
             Collections.emptySet(),
@@ -115,10 +100,17 @@ public class LuceneSearcherTest {
             });
     searcher.initialize();
     Thread.sleep(1000);
-    QueryExpression query = new QueryExpression().setName(".*.(txt|vbd)");
+    QueryExpression query = new QueryExpression().setName(".*.(xml|txt|json|md|java|yaml|yml)");
     SearchResult search = searcher.search(query);
     List<SearchResultEntry> results = search.getResults();
-    assertEquals(results.size(), 3);
+    assertEquals(results.size(), 5);
+    //TODO: result must be sorted by file extension and file name
+    results.forEach(searchResultEntry -> {
+      String filePath = searchResultEntry.getFilePath();
+      System.out.println(filePath);
+    });
+
+
   }
 
 

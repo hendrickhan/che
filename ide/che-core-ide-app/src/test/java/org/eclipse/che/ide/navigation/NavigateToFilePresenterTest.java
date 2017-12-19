@@ -21,6 +21,7 @@ import org.eclipse.che.api.core.jsonrpc.commons.RequestTransmitter;
 import org.eclipse.che.api.promises.client.Promise;
 import org.eclipse.che.ide.api.app.AppContext;
 import org.eclipse.che.ide.api.editor.EditorAgent;
+import org.eclipse.che.ide.api.filetypes.FileTypeRegistry;
 import org.eclipse.che.ide.api.resources.Container;
 import org.eclipse.che.ide.api.resources.File;
 import org.eclipse.che.ide.dto.DtoFactory;
@@ -49,6 +50,7 @@ public class NavigateToFilePresenterTest {
   @Mock private Promise<Optional<File>> optFilePromise;
   @Mock private AppContext appContext;
   @Mock private EditorAgent editorAgent;
+  @Mock private FileTypeRegistry fileTypeRegistry;
   @Mock private DtoFactory dtoFactory;
   @Mock private RequestTransmitter requestTransmitter;
 
@@ -60,7 +62,7 @@ public class NavigateToFilePresenterTest {
     when(container.getFile(any(Path.class))).thenReturn(optFilePromise);
 
     presenter =
-        new NavigateToFilePresenter(view, appContext, editorAgent, requestTransmitter, dtoFactory);
+        new NavigateToFilePresenter(view, appContext, editorAgent, requestTransmitter, fileTypeRegistry, dtoFactory);
   }
 
   @Test

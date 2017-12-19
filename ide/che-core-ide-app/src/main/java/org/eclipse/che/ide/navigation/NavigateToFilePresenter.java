@@ -23,10 +23,15 @@ import org.eclipse.che.api.promises.client.Operation;
 import org.eclipse.che.api.promises.client.OperationException;
 import org.eclipse.che.ide.api.app.AppContext;
 import org.eclipse.che.ide.api.editor.EditorAgent;
+import org.eclipse.che.ide.api.filetypes.FileType;
+import org.eclipse.che.ide.api.filetypes.FileTypeRegistry;
 import org.eclipse.che.ide.api.resources.File;
 import org.eclipse.che.ide.dto.DtoFactory;
 import org.eclipse.che.ide.resource.Path;
 import org.eclipse.che.ide.util.loging.Log;
+
+import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Presenter for file navigation (find file by name and open it).
@@ -40,9 +45,11 @@ public class NavigateToFilePresenter implements NavigateToFileView.ActionDelegat
 
   private final EditorAgent editorAgent;
   private final RequestTransmitter requestTransmitter;
+  private final FileTypeRegistry fileTypeRegistry;
   private final DtoFactory dtoFactory;
   private final NavigateToFileView view;
   private final AppContext appContext;
+  private String pattern;
 
   @Inject
   public NavigateToFilePresenter(
@@ -50,14 +57,24 @@ public class NavigateToFilePresenter implements NavigateToFileView.ActionDelegat
       AppContext appContext,
       EditorAgent editorAgent,
       RequestTransmitter requestTransmitter,
+      FileTypeRegistry fileTypeRegistry,
       DtoFactory dtoFactory) {
     this.view = view;
     this.appContext = appContext;
     this.editorAgent = editorAgent;
     this.requestTransmitter = requestTransmitter;
+    this.fileTypeRegistry = fileTypeRegistry;
     this.dtoFactory = dtoFactory;
 
     this.view.setDelegate(this);
+
+    List<FileType> registeredFileTypes = fileTypeRegistry.getRegisteredFileTypes();
+    registeredFileTypes.forEach(new Consumer<FileType>() {
+      @Override
+      public void accept(FileType fileType) {
+        pattern = pattern + "|" + fileType.getExtension();
+      }
+    });
   }
 
   /** Show dialog with view for navigation. */
@@ -94,7 +111,9 @@ public class NavigateToFilePresenter implements NavigateToFileView.ActionDelegat
         dtoFactory
             .createDto(ProjectSearchRequestDto.class)
             .withPath("")
-            .withName("(.+?)((\\.java))$");
+            .withName(".*.(" + pattern + ")");
+
+    Log.info(getClass(), ">>>> " + requestParams.getName());
 
     requestTransmitter
         .newRequest()
